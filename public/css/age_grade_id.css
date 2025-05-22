@@ -1,0 +1,154 @@
+/* 브라우저 기본 여백 제거 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* 패딩, 보더 포함한 크기 계산 */
+  }
+
+body {
+    width : 100vW;
+    height : 100vh;
+    background-color: var(--bg-03);
+}
+
+.nav-bar-empty_box {
+    width : 100vw;
+    height : 13vh;
+}
+
+/* ────────────────────────────────────────── */
+/* 1. 전체 컨테이너: 최대 너비 제한 & 중앙 정렬 */
+/* ────────────────────────────────────────── */
+.survey-container {
+    width: 100%;
+    max-width: 1200px;          /* 화면이 커져도 1200px까지만 */
+    margin: 0 auto;             /* 가로 중앙 정렬 */
+    padding: 20px;              /* 안쪽 여백 */
+  }
+  
+  /* ────────────────────────────────────────── */
+  /* 2. 각 입력 행(row) 레이아웃               */
+  /* ────────────────────────────────────────── */
+  .form-row {
+    display: flex;              
+    align-items: flex-end;      /* 라벨-인풋-버튼 아래 정렬 */
+    gap: 16px;                  /* 항목 간격 */
+    margin-bottom: 24px;        /* 행 간격 */
+    flex-wrap: wrap;            /* 좁아지면 줄 바꿈 */
+  }
+  
+  /* ────────────────────────────────────────── */
+  /* 3. 입력 그룹(라벨+인풋+확인 버튼)          */
+  /* ────────────────────────────────────────── */
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;                   /* 요소 간격 */
+    flex: 1 1 300px;            /* 최소 300px, 여유공간 균등 분배 */
+    max-width: 70%;             /* 한 행에 두 개 배치 시, 약 70%씩 */
+  }
+  
+  .input-group label {
+    flex-basis: 100%;           /* 라벨은 전체 너비 */
+    font-weight: 600;           /* 굵은 글씨 */
+  }
+  
+  .input-group input[type="text"] {
+    flex: 1;                    /* 남은 공간 모두 차지 */
+    height: 48px;               
+    padding: 0 12px;
+    border: 1px solid var(--input-border, #ccc);
+    border-radius: 24px;
+    background-color: var(--input-bg, #f5f5f5);
+  }
+  
+  .confirm-btn {
+    padding: 0 16px;
+    height: 36px;
+    border: none;
+    border-radius: 18px;
+    background-color: var(--btn-confirm-bg, #8faaf6);
+    color: var(--btn-confirm-text, #fff);
+    cursor: pointer;
+  }
+  
+  /* 입력 확인 메시지 */
+  .confirm-msg {
+    flex-basis: 100%;           /* 메시지도 새 행처럼 */
+    font-size: 0.9rem;
+    color: var(--msg-text, #4caf50);
+    margin-top: 4px;
+  }
+  
+  /* ────────────────────────────────────────── */
+  /* 4. 토글 그룹 (흡연 여부, 만남 방식)        */
+  /* ────────────────────────────────────────── */
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 300px;
+    max-width: 70%;
+  }
+  
+  .toggle-group label {
+    flex-basis: 100%;
+    font-weight: 600;
+  }
+  
+  .toggle-btn {
+    flex: 1;
+    min-width: 100px;
+    height: 48px;
+    border: 1px solid var(--btn-toggle-border, #ccc);
+    border-radius: 24px;
+    background-color: var(--btn-toggle-bg, #f5f5f5);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .toggle-btn.active {
+    background-color: var(--btn-toggle-active-bg, #b1f596);
+    color: var(--btn-toggle-active-text, #fff);
+  }
+  
+  /* ────────────────────────────────────────── */
+  /* 5. 계속 버튼 영역                         */
+  /* ────────────────────────────────────────── */
+  .push-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  
+  .btn-01 {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 0;
+    border: none;
+    border-radius: 24px;
+    background-color: var(--btn-disabled-bg, #ccc);
+    color: var(--btn-disabled-text, #fff);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-01.active {
+    background-color: var(--btn-active-bg, #6fcf97);
+    color: var(--btn-active-text, #fff);
+  }
+  
+  /* ────────────────────────────────────────── */
+  /* 6. 반응형: 화면이 768px 이하로 좁아지면      */
+  /* ────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .input-group,
+    .toggle-group {
+      max-width: 100%;
+    }
+  }
