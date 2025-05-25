@@ -13,8 +13,10 @@
 </head>
 <body>
     <div class = "nav-bar-empty_box"></div>
-
-    <main class = "timetable">
+    <form action="/timetable" method="POST" id="timetable-form">
+         <main class = "timetable">
+            <!-- 폼 전송용 히든 필드 -->
+            <input type="hidden" name="slots" id="slots-input" value="">
         
             <div class = "timetable-text"><p>나의 시간표</p></div>
             
@@ -258,10 +260,11 @@
 
             </div>
         
-    </main>
+          </main>
+        </form>
 
     <div class = "push-btn">
-        <button type="button" id="save-btn"" class = "btn-01">계속</button>
+        <button id="save-btn" type="submit" class="btn-01">계속</button>
     </div>
 
     <script src="/js/timetable.js" defer></script>

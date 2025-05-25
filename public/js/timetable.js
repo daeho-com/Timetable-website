@@ -48,13 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSaveButton();
 
     // 4) "계속" 버튼 클릭 시 이동할 주소 지정
-    saveBtn.addEventListener('click', () => {
-      // 선택된 셀 없을 때는 동작 막고 싶으면 if문 추가 가능
-       if (!saveBtn.classList.contains('active')) return;
-
-      // 원하는 경로로 바꿔주세요
-      window.location.href = '/다음페이지경로';
-    });
+    saveBtn.addEventListener('click', event => {
+        event.preventDefault();
+        if (!saveBtn.classList.contains('active')) return;
+        // 선택된 슬롯 id들을 comma-separated로 추출
+        const slots = cells
+          .filter(cell => cell.classList.contains('selected'))
+          .map(cell => {
+            const cb = cell.querySelector('input[type="checkbox"]');
+            return cb.id.replace('slot-', ''); // "1-1", "2-3" 등
+          })
+          .join(',');
+        document.getElementById('slots-input').value = slots;
+        document.getElementById('timetable-form').submit();
+      });
   });
 
   /*

@@ -61,6 +61,7 @@ app.get('/timetable', (req, res) => {
 });
 
 app.get('/mbti', (req, res) => {
+  if (!req.session.userId) return res.redirect('/login');
   res.render('mbti');
 });
 
@@ -300,8 +301,86 @@ app.get('/create_account', (req, res) => {
       console.error(err);
       return res.status(500).render('login', { error: '서버 오류가 발생했습니다.' });
     }
+
   });
   
+
+// ■ ② POST /timetable — 저장 후 MBTI 페이지로 이동
+app.post('/timetable', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+
+    // 클라이언트에서 "slots" 이름으로 comma-separated string 전송 가정
+    const raw = req.body.slots || '';
+    const slots = raw.split(',').filter(s => s);
+
+    // 기존 스케줄 삭제
+    await pool.execute(`DELETE FROM schedules WHERE user_id = ?`, [userId]);
+
+    // 새로 삽입
+    await Promise.all(
+      slots.map(slot => {
+        const [day, hour] = slot.split('-').map(Number);
+        return pool.execute(
+          `INSERT INTO schedules (user_id, day, hour) VALUES (?, ?, ?)`,
+          [userId, day, hour]
+        );
+      })
+    );
+
+    return res.redirect('/mbti');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ③ POST /mbti — MBTI 저장하고 다음 페이지(나이/학년/ID)로 이동
+app.post('/mbti', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    const { mbti } = req.body;
+    if (!userId) return res.redirect('/login');
+    if (!mbti)  return res.redirect('/mbti');
+
+    // user_profile 테이블의 mbti 컬럼에 저장
+    await pool.execute(
+      `UPDATE user_profile
+         SET mbti = ?
+       WHERE user_id = ?`,
+      [mbti, userId]
+    );
+
+    // 다음 단계로
+    res.redirect('/input01');
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/input01', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+
+    const { age, grade, kakaoId, smokingStatus, meetPref } = req.body;
+
+    // ① user_profile 업데이트
+    await pool.execute(
+      `UPDATE user_profile
+         SET age = ?, grade = ?, kakao_id = ?, smoking_status = ?, meet_pref = ?
+       WHERE user_id = ?`,
+      [age, grade, kakaoId, smokingStatus, meetPref, userId]
+    );
+
+    // ② 다음 페이지로 리다이렉트 (ex: MBTI 페이지)
+    res.redirect('/input02');
+  } catch (err) {
+    next(err);
+  }
+});
+
+
     // 유저 정보 저장 API (POST)
     app.post('/api/user-info', async (req, res) => {
       try {
