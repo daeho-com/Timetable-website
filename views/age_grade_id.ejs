@@ -18,57 +18,70 @@
   <!-- 네비게이션 빈 공간 확보 -->
   <div class="nav-bar-empty_box"></div>
 
-  <!-- ■ 메인 컨테이너 -->
   <main class="survey-container">
-    <!-- 1. 나이 입력 그룹 -->
-    <div class="form-row">
-      <div class="input-group">
-        <label for="age">당신의 나이를 입력해주세요</label>
-        <input type="text" id="age" placeholder="나이" />
-        <button type="button" id="confirm-age" class="confirm-btn">확인</button>
+    <!-- 그리드 래퍼 -->
+    <div class="survey-grid">
+  
+      <!-- 왼쪽 컬럼: 입력 세 그룹 -->
+      <div class="left-col">
+        <!-- 1. 나이 -->
+        <div class="form-row">          
+            <label for="age" class = "form-row-text">당신의 나이를 입력해주세요</label>
+            <div class = "input-group">
+                <input type="text" id="age" placeholder="나이" />
+                <button type="button" id="confirm-age" class="confirm-btn">확인</button>
+            </div>
+          <p class="confirm-msg" id="msg-age"></p>
+          <!-- JS가 “나이가 입력되었습니다”를 넣어 줍니다 -->
+        </div>
+        <!-- 2. 학년 -->
+        <div class="form-row">
+            <label for="grade" class = "form-row-text">학년을 입력해주세요</label>
+            <div class = "input-group">
+                <input type="text" id="grade" placeholder="학년" />
+                <button type="button" id="confirm-grade" class="confirm-btn">확인</button>
+            </div>
+          <p class="confirm-msg" id="msg-grade"></p>
+          <!-- JS가 “학년이 입력되었습니다”를 넣어 줍니다 -->
+        </div>
+        <!-- 3. 카카오톡 ID -->
+        <div class="form-row">      
+            <label for="kakao" class = "form-row-text">카카오톡 아이디를 알려주세요</label>
+            <div class = "input-group">
+                <input type="text" id="kakao" placeholder="카카오톡 아이디" />
+                <button type="button" id="confirm-kakao" class="confirm-btn">확인</button>
+            </div>
+            <p class="confirm-msg" id="msg-kakao"></p>
+            <!-- JS가 “아이디가 입력되었습니다”를 넣어 줍니다 -->
+        </div>
       </div>
-      <p class="confirm-msg" id="msg-age"></p>
-    </div>
-
-    <!-- 2. 학년 입력 그룹 -->
-    <div class="form-row">
-      <div class="input-group">
-        <label for="grade">학년을 입력해주세요</label>
-        <input type="text" id="grade" placeholder="학년" />
-        <button type="button" id="confirm-grade" class="confirm-btn">확인</button>
+  
+      <!-- 오른쪽 컬럼: 토글 두 그룹 -->
+      <div class="right-col">
+        <!-- 흡연여부 -->
+        <div class = "form-detail">
+          <label class = "form-row-text">흡연여부를 선택해주세요</label>
+          <div class=" toggle-group">
+            <button type="button" id="smoke-no" class="toggle-btn">비흡연자</button>
+            <button type="button" id="smoke-yes" class="toggle-btn">흡연자</button>
+          </div>
+        </div>
+        <!-- 만남 선호 -->
+        <div class = "form-detail">
+          <label class = "form-row-text">만남 선호 방식을 선택해주세요</label>
+          <div class=" toggle-group">
+            <button type="button" id="meet-offline" class="toggle-btn">오프라인</button>
+            <button type="button" id="meet-online" class="toggle-btn">온라인</button>
+          </div>
+        </div>
       </div>
-      <p class="confirm-msg" id="msg-grade"></p>
-    </div>
-
-    <!-- 3. 카카오톡 ID 입력 그룹 -->
-    <div class="form-row">
-      <div class="input-group">
-        <label for="kakao">카카오톡 아이디를 알려주세요</label>
-        <input type="text" id="kakao" placeholder="카카오톡 아이디" />
-        <button type="button" id="confirm-kakao" class="confirm-btn">확인</button>
-      </div>
-      <p class="confirm-msg" id="msg-kakao"></p>
-    </div>
-
-    <!-- 4. 흡연여부 토글 그룹 -->
-    <div class="form-row toggle-group">
-      <label>흡연여부를 선택해주세요</label>
-      <button type="button" id="smoke-no" class="toggle-btn">비흡연자</button>
-      <button type="button" id="smoke-yes" class="toggle-btn">흡연자</button>
-    </div>
-
-    <!-- 5. 만남 선호 방식 토글 그룹 -->
-    <div class="form-row toggle-group">
-      <label>만남 선호 방식을 선택해주세요</label>
-      <button type="button" id="meet-offline" class="toggle-btn">오프라인</button>
-      <button type="button" id="meet-online" class="toggle-btn">온라인</button>
+  
     </div>
   </main>
-
-  <!-- ■ 계속 버튼 -->
-  <div class="push-btn">
-    <!-- 처음엔 disabled 처리, 모든 입력 완료되면 JS에서 활성화 -->
-    <button type="button" id="save-btn" class="btn-01" disabled>계속</button>
+  
+  <!-- push 버튼 -->
+  <div class = "push-btn">
+    <button type="button" id="save-btn"" class = "btn-01">계속</button>
   </div>
 
   <!-- ■ 페이지 전용 스크립트 -->

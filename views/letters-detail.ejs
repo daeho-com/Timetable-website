@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>받은 편지 목록</title>
+  <link rel="stylesheet" href="/css/letters.css">
+  <link rel="stylesheet" href="/color/color.css" />
+  <link rel="stylesheet" href="/font/font.css" />
+</head>
+<body>
+  <%- include('../components/nav') %>
+  <div class="detail-header">
+    <img src="<%= letter.avatar_url %>" alt>
+    <span><%= letter.name %> 님의 편지</span>
+  </div>
+  
+  <div class="letter-image">
+    <img src="/img/mail.png" alt="편지">
+    <p>편지가 도착했어요<br>편지를 클릭하여 내용을 확인하세요.</p>
+  </div>
+  
+  <div class="letter-content">
+    <pre>
+  안녕하세요!
+  저는 “<%= letter.university %>” “<%= letter.department %>” 
+  “<%= letter.grade %>학년”에 재학 중인 “<%= letter.name %>”입니다.
+  
+  상세페이지를 보고 정말 잘 맞을 것 같아
+  함께 스터디하고 싶어 연락드려요!
+    </pre>
+    <a href="/users/<%= letter.sender_id %>">
+      “<%= letter.name %>” 상세페이지 보기
+    </a>
+  </div>
+  
+  <div class="actions">
+    <button class="btn-accept">수락하기</button>
+    <button class="btn-reject">거절하기</button>
+  </div>
+
+  <script src="/js/letters.js" defer></script>
+</body>
+</html>

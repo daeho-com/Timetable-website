@@ -24,8 +24,11 @@
       </div>  
 
       <form action="/login" method="POST" class="login-card-input">
+        <% if (typeof error !== 'undefined') { %>
+          <div class="error-message"><%= error %></div>
+        <% } %>
         <input class = "login-card-input-part"type="email" name="login-email" placeholder="학교 이메일" required>
-        <input class = "login-card-input-part" classtype="password" name="login-password" placeholder="비밀번호" required>
+        <input class = "login-card-input-part" type="password" name="login-password" placeholder="비밀번호" required>
         <button type="submit" class="login-card-input-btn">로그인하기</button>
       </form>
 
