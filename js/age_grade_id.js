@@ -12,15 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgGrade = document.querySelector('#msg-grade');
     const msgKakao = document.querySelector('#msg-kakao');
   
-    const smokeBtns = [ 
-      document.querySelector('#smoke-no'),
-      document.querySelector('#smoke-yes')
-    ];
-    const meetBtns  = [
-      document.querySelector('#meet-offline'),
-      document.querySelector('#meet-online')
-    ];
+    const smokeBtns = [document.querySelector('#smoke-no'), document.querySelector('#smoke-yes')];
+    const meetBtns  = [document.querySelector('#meet-offline'), document.querySelector('#meet-online')];
   
+    const smokingStatusInput = document.getElementById('smokingStatus');
+    const meetPrefInput      = document.getElementById('meetPref');
+
     const saveBtn = document.querySelector('#save-btn');
   
     // 2) 입력 완료 여부 플래그
@@ -69,27 +66,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   
     // 5) 토글 그룹 로직 (한 개만 선택)
-    function setupToggle(buttons, flagSetter) {
+    function setupToggle(buttons, hiddenInput, setterFlag) {
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           buttons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          flagSetter(true);
+          btn.classList.add('active'); 
+          hiddenInput.value = btn.dataset.value;
+          // 실제로는 btn.id === 'smoke-yes' ? 'yes' : 'no'
+          setterFlag(true);
           updateSaveButton();
         });
       });
     }
-    setupToggle(smokeBtns, (v) => smokeDone = v);
-    setupToggle(meetBtns,  (v) => meetDone  = v);
+    setupToggle(smokeBtns, smokingStatusInput, v => smokeDone = v);
+    setupToggle(meetBtns,  meetPrefInput,      v => meetDone  = v);
   
     // 6) 초기 상태 반영
     updateSaveButton();
   
-    // 7) 계속 버튼 클릭 시 페이지 이동 (추후 DB 저장 후에 사용)
-    saveBtn.addEventListener('click', () => {
-      if (!saveBtn.disabled) {
-        // 예시: window.location.href = '/next-step';
-      }
-    });
   });
   

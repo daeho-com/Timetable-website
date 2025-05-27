@@ -1,13 +1,20 @@
-/* public/css/letters.css */
+/* 브라우저 기본 여백 제거 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* 패딩, 보더 포함한 크기 계산 */
+}
+
 body {
-    margin: 0;
-    font-family: 'Noto Sans', sans-serif;
-    background: #f8f8fc;
-  }
-  
-  .nav-bar-empty_box {
-    height: 13vh;
-  }
+  width : 100vW;
+  height : 100vh;
+  background-color: var(--bg-03);
+}
+
+.nav-bar-empty_box {
+  width : 100vw;
+  height : 13vh;
+}
   
   /* 전체 레이아웃: 좌측 목록, 우측 상세 */
   .layout {
@@ -142,3 +149,40 @@ body {
     background: #777;
     color: #fff;
   }
+
+  /* 수락/거절 결과 메시지 */
+.result-accept, .result-reject {
+  text-align: center;
+  padding: 40px;
+}
+.result-accept p {
+  font-size: 1.4rem;
+  color: #f04e32; /* 빨간 그라데이션 컬러 계열 */
+}
+.result-reject p {
+  font-size: 1.4rem;
+  color: #555;   /* 회색 톤 */
+}
+/* 뒤로가기 버튼 */
+.btn-back {
+  margin-top: 24px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 24px;
+  background: #777;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.hidden {
+  display: none;
+}
+
+.letter-item.sent {
+  opacity: 0.6;
+}
+.letter-list h2 + .sent {
+  /* 예: 보낸 편지는 살짝 오른쪽으로 들여쓰기 */
+  margin-left: 8px;
+}

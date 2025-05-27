@@ -12,17 +12,37 @@
   <div class="nav-bar-empty_box"></div>
 
   <div class="layout">
+
+    <!-- 왼쪽 사이드바: 받은 편지 & 보낸 편지 -->
     <aside class="letter-list">
       <h2>받은 편지</h2>
-      <% letters.forEach(l => { %>
-        <div class="letter-item" data-id="<%= l.id %>">
-          <img src="<%= l.avatar_url %>" alt>
-          <div class="meta">
-            <strong><%= l.name %></strong>
+      <% if (inbox.length) { %>
+        <% inbox.forEach(l => { %>
+          <div class="letter-item" data-id="<%= l.id %>">
+            <img src="<%= l.avatar_url %>" alt>
+            <div class="meta"><strong><%= l.name %></strong></div>
           </div>
-        </div>
-      <% }) %>
+        <% }) %>
+      <% } else { %>
+        <p class="empty">받은 편지가 없습니다.</p>
+      <% } %>
+  
+      <hr />
+  
+      <h2>보낸 편지</h2>
+      <% if (sent.length) { %>
+        <% sent.forEach(l => { %>
+          <div class="letter-item sent" data-id="<%= l.id %>">
+            <img src="<%= l.avatar_url %>" alt>
+            <div class="meta"><strong><%= l.name %></strong></div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="empty">보낸 편지가 없습니다.</p>
+      <% } %>
     </aside>
+  
+    <!-- 우측 디테일 영역 -->
     <main class="letter-detail">
       <p class="placeholder">편지를 선택하세요</p>
     </main>

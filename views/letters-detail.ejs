@@ -9,8 +9,9 @@
 </head>
 <body>
   <%- include('../components/nav') %>
+  <div class = "nav-bar-empty_box"></div>
   <div class="detail-header">
-    <img src="<%= letter.avatar_url %>" alt>
+    <img src="/img/mail.png" alt="편지" class="letter-icon">
     <span><%= letter.name %> 님의 편지</span>
   </div>
   
@@ -19,7 +20,7 @@
     <p>편지가 도착했어요<br>편지를 클릭하여 내용을 확인하세요.</p>
   </div>
   
-  <div class="letter-content">
+  <div class="letter-content hidden">
     <pre>
   안녕하세요!
   저는 “<%= letter.university %>” “<%= letter.department %>” 

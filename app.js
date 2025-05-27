@@ -69,9 +69,18 @@ app.get('/input01', (req, res) => {
   res.render('age_grade_id');
 });
 
+app.get('/input02', (req, res) => {
+  res.render('input02');
+});
+
+app.get('/input03', (req, res) => {
+  res.render('input03');
+});
+
 app.get('/first-page', (req, res) => {
   res.render('firstpage');
 });
+
 
 app.get('/certification-stage', (req, res) => {
   const data = req.session.signupData;
@@ -89,10 +98,11 @@ app.get('/create_account', (req, res) => {
 // 유저 상세 페이지 (GET)
  app.get('/users/:id', async (req, res, next) => {
      try {
-       const userId = req.params.id;
+       const userId = parseInt(req.params.id, 10);
+       
        // 올바른 테이블명 user_profile, 올바른 PK 컬럼 user_id
        const [userRows] = await pool.query(
-          `SELECT name, avatar_url, university, department, grade, age,
+          `SELECT user_id, name, avatar_url, university, department, grade, age,
                   mbti, gender, meet_pref, study_goal,
                   vibe_pref, speaking_style, noise_sensitivity,
                   charm_point, strength
@@ -103,7 +113,7 @@ app.get('/create_account', (req, res) => {
        const user = userRows[0];
   
        // 2) 본인(로그인 유저) & 상세 페이지 유저 스케줄 조회
-       const currentUserId = 1; // 세션에서 꺼내오는 예시
+       const currentUserId = req.session.userId;  // 로그인한 유저 ID
        const [mine]  = await pool.query(
          `SELECT day, hour FROM schedules WHERE user_id = ?`,
          [currentUserId]
@@ -125,24 +135,51 @@ app.get('/create_account', (req, res) => {
        }
   
        // 4) EJS 렌더링
-       res.render('user-detail', { user, matchSlots });
+       res.render('user-detail', { user, matchSlots, currentUserId });
      } catch (err) {
        next(err);
      }
    });
 
-    // app.js
-  app.get('/letters', async (req, res) => {
-    const userId = req.session.userId || 1;
-    const [rows] = await pool.query(`
-      SELECT l.id, u.user_id AS senderId, u.name, u.avatar_url
+// app.js
+app.get('/letters', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+
+    // ① 받은 편지함
+    const [inbox] = await pool.query(`
+      SELECT l.id
+           , u.user_id    AS peerId
+           , u.name
+           , u.avatar_url
       FROM letters l
-      JOIN user_profile u ON u.user_id = l.sender_id
-      WHERE l.receiver_id = ? AND l.status = 'pending'
-      ORDER BY l.created_at DESC
+      JOIN user_profile u
+        ON u.user_id = l.sender_id
+     WHERE l.receiver_id = ?
+       AND l.status = 'pending'
+     ORDER BY l.sent_at DESC
     `, [userId]);
-    res.render('letters-list', { letters: rows });
-  });
+
+    // ② 보낸 편지함
+    const [sent] = await pool.query(`
+      SELECT l.id
+           , u.user_id    AS peerId
+           , u.name
+           , u.avatar_url
+      FROM letters l
+      JOIN user_profile u
+        ON u.user_id = l.receiver_id
+     WHERE l.sender_id = ?
+       AND l.status = 'pending'         -- 아직 응답 대기 중인 편지만
+     ORDER BY l.sent_at DESC
+    `, [userId]);
+
+    res.render('letters-list', { inbox, sent });
+  } catch (err) {
+    next(err);
+  }
+});
 
 
   // ■ 편지 상세보기 라우트
@@ -375,6 +412,77 @@ app.post('/input01', async (req, res, next) => {
 
     // ② 다음 페이지로 리다이렉트 (ex: MBTI 페이지)
     res.redirect('/input02');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ■ ③ POST /input02 — 저장 후 다음 페이지로 리다이렉트
+app.post('/input02', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+
+    const { study_goal, vibe_pref } = req.body;
+    // ① user_profile 에 업데이트
+    await pool.execute(
+      `UPDATE user_profile
+         SET study_goal = ?, vibe_pref = ?
+       WHERE user_id = ?`,
+      [study_goal, vibe_pref, userId]
+    );
+
+    // ② 다음 단계로 이동 (예: 스타일 설정 페이지)
+    return res.redirect('/input03');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ■ ④ POST /input03 — 스타일 환경설정 저장 후 다음 페이지로
+app.post('/input03', async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+
+    const { speaking_style, noise_sensitivity, charm_point, strength } = req.body;
+
+    // user_profile 테이블에 업데이트
+    await pool.execute(
+      `UPDATE user_profile
+         SET speaking_style = ?, noise_sensitivity = ?, charm_point = ?, strength = ?
+       WHERE user_id = ?`,
+      [speaking_style, noise_sensitivity, charm_point, strength, userId]
+    );
+
+    // 저장 완료 후, 원하시는 페이지로 리다이렉트
+    return res.redirect('/next-step'); // 예: 메인 페이지나 편지 리스트 등
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/letter-list', async (req, res, next) => {
+  try {
+    const senderId   = req.session.userId;
+    const receiverId = Number(req.body.receiver_id);
+    if (!senderId || senderId === receiverId) {
+      // 로그인 안 됐거나, 자기 자신에게 보내려 하면
+      return res.redirect('/letters');
+    }
+
+    // content 컬럼에 기본 메시지나 빈 문자열 넣기
+    const content = '';
+
+    // 중복 키(UK on sender_id+receiver_id)가 있으면 무시
+    await pool.execute(
+      `INSERT IGNORE INTO letters (sender_id, receiver_id, content)
+       VALUES (?, ?, ?)`,
+      [senderId, receiverId, content]
+    );
+
+    // 항상 받은 편지함으로 돌아가기
+    res.redirect('/letters');
   } catch (err) {
     next(err);
   }

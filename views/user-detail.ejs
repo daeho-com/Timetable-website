@@ -67,7 +67,21 @@
         <div class="value"><%= user.strength %></div>
       </div>
 
-      <button class="btn-send">상대에게 편지보내기</button>
+      <div class="actions">
+        <% if (currentUserId !== user.user_id) { %>
+          <form action="/letter-list" method="POST">
+            <input 
+              type="hidden" 
+              name="receiver_id" 
+              value="<%= user.user_id %>"
+            />
+            <!-- 기존 버튼들(예: 공강 매칭 등) 아래에 -->
+            <button type="submit" id="send-letter-btn" data-user-id="<%= user.user_id %>" class="btn-send">
+              상대에게 편지 보내기
+            </button>
+          </form>
+        <% } %>
+      </div>
     </section>
 
      <!-- 스크립트 로드 (public/js/user-detail.js) -->

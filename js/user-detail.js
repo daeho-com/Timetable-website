@@ -1,17 +1,27 @@
-// public/js/user-detail.js
 document.addEventListener('DOMContentLoaded', () => {
-    const sendBtn = document.querySelector('.btn-send');
-    let hasSent = false;  // 전송 여부 플래그
-  
-    sendBtn.addEventListener('click', () => {
-      if (!hasSent) {
-        // 첫 클릭
-        alert('성공적으로 보내졌습니다');
-        hasSent = true;
-        // 실제 전송 로직이 있다면 여기에 AJAX 호출 넣으세요.
-      } else {
-        // 이미 보낸 상태
-        alert('이미 보낸 상대입니다');
-      }
+  const sendBtn = document.getElementById('send-letter-btn');
+  if (!sendBtn) return;  // 페이지에 버튼이 없으면 종료
+
+  sendBtn.addEventListener('click', async () => {
+    // 1) 로그인 체크 (세션 유효성 검사 등 필요 시)
+    // 2) receiverId 가져오기
+    const receiverId = sendBtn.dataset.userId;
+    
+    // 3) POST 요청
+    const res = await fetch('/letters', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ receiverId })
     });
+    const json = await res.json();
+    
+    // 4) 결과 처리
+    if (json.success) {
+      alert('📝 편지가 성공적으로 전송되었습니다!');
+      // 목록 페이지로 이동
+      location.href = '/letters';
+    } else {
+      alert('⚠️ 편지 전송 실패: ' + (json.error || 'Unknown error'));
+    }
   });
+});
