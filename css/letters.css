@@ -186,3 +186,25 @@ body {
   /* 예: 보낸 편지는 살짝 오른쪽으로 들여쓰기 */
   margin-left: 8px;
 }
+
+/* 편지 상세 결과 메시지 */
+.result-message {
+  padding: 12px;
+  margin: 16px 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.result-message.accept {
+  background: #e0f7e9;
+  color: #257a3c;
+}
+.result-message.reject {
+  background: #fdecea;
+  color: #a12a2a;
+}
+
+/* 보낸 편지 중 아직 pending 상태는 회색 & 클릭 불가 표시 */
+.letter-list .letter-item.sent[data-status="pending"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

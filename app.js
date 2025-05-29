@@ -1,11 +1,13 @@
+require('dotenv').config();
 // 1. 필요한 모듈 불러오기
 const express = require('express');
 const path = require('path');
 const session = require('express-session'); 
-const mysql   = require('mysql2/promise');
 const app = express();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const partnerSurveyRouter = require('./routes/partner-survey-route');
+
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.naver.com', // Office 365 SMTP 서버
@@ -17,15 +19,10 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// MySQL 풀 생성 (원하는 설정으로 호스트/계정/DB명 수정)
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'daeho',
-    password: '1234',
-    database: 'user_db',
-    waitForConnections: true,
-    connectionLimit: 10
-  });
+// ← 이 한 줄로 db.js 에 있는 pool 을 불러옵니다
+const pool = require('./db');
+
+
 
 // 세션 설정 (cookie 기반)
 app.use(session({
@@ -147,32 +144,22 @@ app.get('/letters', async (req, res, next) => {
     const userId = req.session.userId;
     if (!userId) return res.redirect('/login');
 
-    // ① 받은 편지함
+    // 받은 편지 (모든 상태)
     const [inbox] = await pool.query(`
-      SELECT l.id
-           , u.user_id    AS peerId
-           , u.name
-           , u.avatar_url
+      SELECT l.id, u.user_id AS peerId, u.name, u.avatar_url, l.status
       FROM letters l
-      JOIN user_profile u
-        ON u.user_id = l.sender_id
-     WHERE l.receiver_id = ?
-       AND l.status = 'pending'
-     ORDER BY l.sent_at DESC
+      JOIN user_profile u ON u.user_id = l.sender_id
+      WHERE l.receiver_id = ?
+      ORDER BY l.sent_at DESC
     `, [userId]);
 
-    // ② 보낸 편지함
+    // 보낸 편지 (모든 상태)
     const [sent] = await pool.query(`
-      SELECT l.id
-           , u.user_id    AS peerId
-           , u.name
-           , u.avatar_url
+      SELECT l.id, u.user_id AS peerId, u.name, u.avatar_url, l.status
       FROM letters l
-      JOIN user_profile u
-        ON u.user_id = l.receiver_id
-     WHERE l.sender_id = ?
-       AND l.status = 'pending'         -- 아직 응답 대기 중인 편지만
-     ORDER BY l.sent_at DESC
+      JOIN user_profile u ON u.user_id = l.receiver_id
+      WHERE l.sender_id = ?
+      ORDER BY l.sent_at DESC
     `, [userId]);
 
     res.render('letters-list', { inbox, sent });
@@ -187,14 +174,17 @@ app.get('/letters', async (req, res, next) => {
     try {
       const letterId = req.params.letterId;
       const [rows] = await pool.query(`
-        SELECT l.*, u.name, u.avatar_url, u.kakao_id
+        SELECT l.*, u.name, u.avatar_url, u.kakao_id, l.receiver_id
         FROM letters l
         JOIN user_profile u
           ON u.user_id = l.sender_id
         WHERE l.id = ?
       `, [letterId]);
       if (!rows[0]) return res.status(404).send('No such letter');
-      res.render('letters-detail', { letter: rows[0] });
+      const letter = rows[0];
+      // 세션에서 로그인한 유저 ID
+      const currentUserId = req.session.userId;
+      res.render('letters-detail', { letter, currentUserId });
     } catch (err) {
       next(err);
     }
@@ -464,6 +454,8 @@ app.post('/input03', async (req, res, next) => {
 
 app.post('/letter-list', async (req, res, next) => {
   try {
+    console.log('→ letter-list POST body:', req.body);
+    console.log('→ 세션 userId:', req.session.userId);
     const senderId   = req.session.userId;
     const receiverId = Number(req.body.receiver_id);
     if (!senderId || senderId === receiverId) {
@@ -532,6 +524,9 @@ app.post('/letter-list', async (req, res, next) => {
       res.status(500).json({ success:false, error:'SERVER_ERROR' });
     }
   });
+
+
+app.use('/partner-survey', partnerSurveyRouter);
 
 
 // 4. 서버 시작

@@ -18,23 +18,33 @@
       <h2>받은 편지</h2>
       <% if (inbox.length) { %>
         <% inbox.forEach(l => { %>
-          <div class="letter-item" data-id="<%= l.id %>">
+          <div class="letter-item" data-id="<%= l.id %>" data-status="<%= l.status %>" data-dir="in">
             <img src="<%= l.avatar_url %>" alt>
-            <div class="meta"><strong><%= l.name %></strong></div>
+            <div class="meta">
+              <strong><%= l.name %></strong>
+              <% if (l.status !== 'pending') { %>
+                <span class="status-tag"><%= l.status === 'accepted' ? '✅ 수락됨' : '❌ 거절됨' %></span>
+              <% } %>
+            </div>
           </div>
         <% }) %>
       <% } else { %>
         <p class="empty">받은 편지가 없습니다.</p>
       <% } %>
-  
-      <hr />
-  
+    </aside>
+
+    <aside class = "letter-list">
       <h2>보낸 편지</h2>
       <% if (sent.length) { %>
         <% sent.forEach(l => { %>
-          <div class="letter-item sent" data-id="<%= l.id %>">
+          <div class="letter-item sent" data-id="<%= l.id %>" data-status="<%= l.status %>" data-dir="out" >
             <img src="<%= l.avatar_url %>" alt>
-            <div class="meta"><strong><%= l.name %></strong></div>
+            <div class="meta">
+              <strong><%= l.name %></strong>
+              <% if (l.status !== 'pending') { %>
+                <span class="status-tag"><%= l.status === 'accepted' ? '✅ 수락됨' : '❌ 거절됨' %></span>
+              <% } %>
+            </div>
           </div>
         <% }) %>
       <% } else { %>
